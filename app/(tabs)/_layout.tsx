@@ -1,33 +1,83 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useLanguage } from '../../contexts/LanguageContext';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function TabsLayout() {
+  const { t } = useLanguage();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        tabBarActiveTintColor: '#2563EB',
+        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarStyle: {
+          height: 62,
+          paddingTop: 6,
+          paddingBottom: 8,
+          backgroundColor: '#FFFFFF',
+          borderTopWidth: 1,
+          borderTopColor: '#E5E7EB',
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: t.home,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+          ),
         }}
       />
+
       <Tabs.Screen
-        name="explore"
+        name="workers"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: t.workers,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'people' : 'people-outline'} size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="promotions"
+        options={{
+          title: t.promotions,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? 'pricetags' : 'pricetags-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="menu"
+        options={{
+          href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="orders"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

@@ -1,98 +1,294 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  Pressable,
+  FlatList,
+} from 'react-native';
+import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useQuery } from '@tanstack/react-query';
+import ServiceCard from '../../components/ServiceCard';
+import { dashboardStyles as styles } from '../../styles/dashboard.styles';
+import { useLanguage } from '../../contexts/LanguageContext';
+import {
+  getNotifications,
+  AppNotification,
+  getServices,
+  ServiceItem,
+} from '../../lib/firebaseApi';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const serviceToCategoryMap: Record<string, string> = {
+  Cleaning: 'All',
+  Plumbing: 'Plumber',
+  Electrician: 'Electrician',
+  Carpenter: 'Carpenter',
+  Repairing: 'Mechanic',
+  Painting: 'All',
+  Mechanic: 'Mechanic',
+  'AC Repair': 'All',
+  More: 'All',
+  'More Services': 'All',
+};
 
-export default function HomeScreen() {
+export default function DashboardScreen() {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [notificationsVisible, setNotificationsVisible] = useState(false);
+  const [showLanguageOptions, setShowLanguageOptions] = useState(false);
+
+  const { t, language, setLanguage, isRTL } = useLanguage();
+
+  const {
+    data: notifications = [],
+    isLoading: notificationsLoading,
+    isError: notificationsError,
+  } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: getNotifications,
+  });
+
+  const {
+    data: services = [],
+    isLoading: servicesLoading,
+    isError: servicesError,
+  } = useQuery({
+    queryKey: ['services'],
+    queryFn: getServices,
+  });
+
+  const translatedServiceTitles: Record<string, string> = {
+    Cleaning: t.cleaning,
+    Plumbing: t.plumbing,
+    Electrician: t.electrician,
+    Carpenter: t.carpenter,
+    Repairing: t.repairing,
+    Painting: t.painting,
+    Mechanic: t.mechanic,
+    'AC Repair': t.acRepair,
+    'More Services': t.moreServices,
+    More: t.moreServices,
+  };
+
+  const handleServicePress = (title: string) => {
+    const category = serviceToCategoryMap[title] || 'All';
+    router.push({
+      pathname: '/workers',
+      params: { category },
+    });
+  };
+
+  const openMenu = () => {
+    setNotificationsVisible(false);
+    setMenuVisible(true);
+  };
+
+  const openNotifications = () => {
+    setMenuVisible(false);
+    setNotificationsVisible(true);
+  };
+
+  const closePanels = () => {
+    setMenuVisible(false);
+    setNotificationsVisible(false);
+    setShowLanguageOptions(false);
+  };
+
+  const handleMenuItemPress = (key: string) => {
+    if (key === 'language') {
+      setShowLanguageOptions((prev) => !prev);
+      return;
+    }
+  };
+
+  const menuItems = [
+    { id: '1', key: 'myProfile', title: t.myProfile },
+    { id: '2', key: 'contactUs', title: t.contactUs },
+    { id: '3', key: 'becomeWorker', title: t.becomeWorker },
+    { id: '4', key: 'language', title: t.language },
+    { id: '5', key: 'logout', title: t.logout },
+  ];
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={styles.screen}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
+        <View style={styles.header}>
+          <Text style={styles.brandName}>FixTime</Text>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              style={styles.iconButton}
+              activeOpacity={0.85}
+              onPress={openNotifications}
+            >
+              <Text style={styles.iconText}>🔔</Text>
+              <View style={styles.notificationDot} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.iconButton}
+              activeOpacity={0.85}
+              onPress={openMenu}
+            >
+              <Text style={styles.iconText}>☰</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.searchWrapper}>
+          <TextInput
+            placeholder={t.searchHire}
+            placeholderTextColor="#A0A0A0"
+            style={[styles.searchInput, isRTL && { textAlign: 'right' }]}
+          />
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{t.services}</Text>
+        </View>
+
+        {servicesLoading ? (
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>
+            Loading services...
+          </Text>
+        ) : servicesError ? (
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>
+            Error loading services
+          </Text>
+        ) : (
+          <View style={styles.grid}>
+            {services.map((service: ServiceItem) => (
+              <ServiceCard
+                key={service.id}
+                title={translatedServiceTitles[service.title] || service.title}
+                icon={service.icon}
+                onPress={() => handleServicePress(service.title)}
+              />
+            ))}
+          </View>
+        )}
+      </ScrollView>
+
+      <Modal
+        visible={menuVisible || notificationsVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={closePanels}
+      >
+        <Pressable style={styles.overlay} onPress={closePanels}>
+          {menuVisible && (
+            <Pressable style={styles.menuPanel} onPress={(e) => e.stopPropagation()}>
+              <Text style={styles.panelTitle}>{t.menu}</Text>
+
+              <FlatList
+                data={menuItems}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.panelList}
+                renderItem={({ item }) => (
+                  <View>
+                    <TouchableOpacity
+                      style={styles.panelItem}
+                      activeOpacity={0.85}
+                      onPress={() => handleMenuItemPress(item.key)}
+                    >
+                      <Text style={styles.panelItemText}>{item.title}</Text>
+                      <Text style={styles.panelArrow}>›</Text>
+                    </TouchableOpacity>
+
+                    {item.key === 'language' && showLanguageOptions && (
+                      <View style={styles.languageDropdown}>
+                        <TouchableOpacity
+                          style={[
+                            styles.languageOptionButton,
+                            language === 'en' && styles.languageOptionButtonActive,
+                          ]}
+                          onPress={() => setLanguage('en')}
+                        >
+                          <Text
+                            style={[
+                              styles.languageOptionText,
+                              language === 'en' && styles.languageOptionTextActive,
+                            ]}
+                          >
+                            {t.english}
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={[
+                            styles.languageOptionButton,
+                            language === 'ar' && styles.languageOptionButtonActive,
+                          ]}
+                          onPress={() => setLanguage('ar')}
+                        >
+                          <Text
+                            style={[
+                              styles.languageOptionText,
+                              language === 'ar' && styles.languageOptionTextActive,
+                            ]}
+                          >
+                            {t.arabic}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
+                )}
+              />
+            </Pressable>
+          )}
+
+          {notificationsVisible && (
+            <Pressable
+              style={styles.notificationsPanel}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <Text style={styles.panelTitle}>{t.notifications}</Text>
+
+              {notificationsLoading ? (
+                <Text style={{ textAlign: 'center', marginTop: 12 }}>
+                  Loading notifications...
+                </Text>
+              ) : notificationsError ? (
+                <Text style={{ textAlign: 'center', marginTop: 12 }}>
+                  Error loading notifications
+                </Text>
+              ) : (
+                <FlatList
+                  data={notifications}
+                  keyExtractor={(item: AppNotification) => item.id}
+                  contentContainerStyle={styles.panelList}
+                  ListEmptyComponent={
+                    <Text style={{ textAlign: 'center', marginTop: 12 }}>
+                      No notifications found
+                    </Text>
+                  }
+                  renderItem={({ item }) => (
+                    <View style={styles.notificationItem}>
+                      <View
+                        style={[styles.notificationIconBox, { backgroundColor: item.color }]}
+                      >
+                        <Text style={styles.notificationIconText}>!</Text>
+                      </View>
+
+                      <View style={styles.notificationTextWrap}>
+                        <Text style={styles.notificationTitle}>{item.title}</Text>
+                        <Text style={styles.notificationMessage}>{item.message}</Text>
+                      </View>
+                    </View>
+                  )}
+                />
+              )}
+            </Pressable>
+          )}
+        </Pressable>
+      </Modal>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
