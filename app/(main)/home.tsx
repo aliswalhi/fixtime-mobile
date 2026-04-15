@@ -1,18 +1,20 @@
+import { router } from 'expo-router';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import PrimaryButton from '../components/primary-button';
-import SuccessMessage from '../components/success-message';
-import colors from '../constants/colors';
-import { useAuth } from '../hooks/use-auth';
-import { logout } from '../integrations/api/auth-api';
-import showAlert from '../utils/show-alert';
+import PrimaryButton from '../../components/primary-button';
+import SuccessMessage from '../../components/success-message';
+import colors from '../../constants/colors';
+import { useAuth } from '../../hooks/use-auth';
+import { logout } from '../../services/auth/auth-api';
+import showAlert from '../../utils/show-alert';
 
-export default function HomeScreen() {
+export default function HomePage() {
   const { profile, clearAuthenticatedSession } = useAuth();
 
   async function handleLogout() {
     try {
       await logout();
       await clearAuthenticatedSession();
+      router.replace('/login');
     } catch (error: any) {
       showAlert('Logout Failed', error.message);
     }
@@ -25,7 +27,7 @@ export default function HomeScreen() {
       <View style={styles.card}>
         <View style={styles.logoWrapper}>
           <Image
-            source={require('../assets/logo.png')}
+            source={require('../../assets/logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />

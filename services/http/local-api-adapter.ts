@@ -10,10 +10,11 @@ import {
   loginWithFirebase,
   logoutFromFirebase,
   registerWithFirebase,
-} from '../firebase/auth-provider';
+} from '../../integrations/firebase/auth-provider';
 import type { ApiErrorResponse } from '../../types/api';
 
 type RouteHandler = (payload?: unknown) => Promise<unknown>;
+
 const protectedRoutes = new Set(['POST /auth/logout', 'GET /auth/me']);
 
 const routeHandlers: Record<string, RouteHandler> = {

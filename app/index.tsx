@@ -1,12 +1,9 @@
+import { router } from 'expo-router';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import PrimaryButton from '../components/primary-button';
 import colors from '../constants/colors';
 
-type SplashScreenProps = {
-  navigation: any;
-};
-
-export default function SplashScreen({ navigation }: SplashScreenProps) {
+export default function SplashPage() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -22,10 +19,7 @@ export default function SplashScreen({ navigation }: SplashScreenProps) {
         <Text style={styles.subtitle}>Get Help Anytime</Text>
       </View>
 
-      <PrimaryButton
-        title="Get Started"
-        onPress={() => navigation.navigate('Login')}
-      />
+      <PrimaryButton title="Get Started" onPress={() => router.push('/login')} />
     </View>
   );
 }

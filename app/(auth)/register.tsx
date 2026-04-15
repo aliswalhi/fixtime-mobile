@@ -1,24 +1,21 @@
+import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import AuthHeader from '../components/auth-header';
-import InputField from '../components/input-field';
-import PrimaryButton from '../components/primary-button';
-import colors from '../constants/colors';
-import showAlert from '../utils/show-alert';
-import type { RegisterPayload } from '../types/auth';
+import AuthHeader from '../../components/auth-header';
+import InputField from '../../components/input-field';
+import PrimaryButton from '../../components/primary-button';
+import colors from '../../constants/colors';
+import { useRegisterMutation } from '../../hooks/use-auth-mutations';
+import type { RegisterPayload } from '../../types/auth';
+import showAlert from '../../utils/show-alert';
 import {
   validateEmailValue,
   validateNameValue,
   validatePasswordValue,
   validatePhoneValue,
-} from '../validation/auth-validation';
-import { useRegisterMutation } from '../hooks/use-auth-mutations';
+} from '../../validation/auth-validation';
 
-type RegisterScreenProps = {
-  navigation: any;
-};
-
-export default function RegisterScreen({ navigation }: RegisterScreenProps) {
+export default function RegisterPage() {
   const registerMutation = useRegisterMutation();
   const {
     control,
@@ -40,7 +37,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
       await registerMutation.mutateAsync(values);
       showAlert('Success', 'Account created successfully');
       reset();
-      navigation.replace('Login');
+      router.replace('/login');
     } catch (error: any) {
       showAlert('Register Failed', error.message);
     }
@@ -129,7 +126,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
           disabled={registerMutation.isPending}
         />
 
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+        <TouchableOpacity onPress={() => router.push('/login')}>
           <Text style={styles.linkText}>Already have an account? Back to Login</Text>
         </TouchableOpacity>
       </View>

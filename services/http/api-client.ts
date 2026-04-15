@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { localApiAdapter } from '../../integrations/api/local-api-adapter';
+import { localApiAdapter } from './local-api-adapter';
 
 export const apiClient = axios.create({
   adapter: localApiAdapter,

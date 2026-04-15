@@ -1,22 +1,19 @@
+import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import AuthHeader from '../components/auth-header';
-import InputField from '../components/input-field';
-import PrimaryButton from '../components/primary-button';
-import colors from '../constants/colors';
-import showAlert from '../utils/show-alert';
-import type { LoginPayload } from '../types/auth';
+import AuthHeader from '../../components/auth-header';
+import InputField from '../../components/input-field';
+import PrimaryButton from '../../components/primary-button';
+import colors from '../../constants/colors';
+import { useLoginMutation } from '../../hooks/use-auth-mutations';
+import type { LoginPayload } from '../../types/auth';
+import showAlert from '../../utils/show-alert';
 import {
   validateEmailValue,
   validatePasswordValue,
-} from '../validation/auth-validation';
-import { useLoginMutation } from '../hooks/use-auth-mutations';
+} from '../../validation/auth-validation';
 
-type LoginScreenProps = {
-  navigation: any;
-};
-
-export default function LoginScreen({ navigation }: LoginScreenProps) {
+export default function LoginPage() {
   const loginMutation = useLoginMutation();
   const {
     control,
@@ -33,6 +30,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   async function handleLogin(values: LoginPayload) {
     try {
       await loginMutation.mutateAsync(values);
+      router.replace('/home');
     } catch (error: any) {
       showAlert('Login Failed', error.message);
     }
@@ -86,7 +84,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           disabled={loginMutation.isPending}
         />
 
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+        <TouchableOpacity onPress={() => router.push('/register')}>
           <Text style={styles.linkText}>Don't have an account? Register</Text>
         </TouchableOpacity>
       </View>

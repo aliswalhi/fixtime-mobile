@@ -5,7 +5,12 @@ import type {
   RegisterResponse,
   UserProfile,
 } from '../../types/auth';
-import { getCurrentUserProfileRequest, loginRequest, logoutRequest, registerRequest } from '../../services/auth/auth-service';
+import {
+  getCurrentUserProfileRequest,
+  loginRequest,
+  logoutRequest,
+  registerRequest,
+} from './auth-service';
 import { AuthApiError, normalizeAuthError } from './auth-errors';
 import {
   getLoginValidationError,

@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getCurrentUserProfile } from '../integrations/api/auth-api';
+import { getCurrentUserProfile } from '../services/auth/auth-api';
 import type { LoginResponse, RegisterResponse, UserProfile } from '../types/auth';
 import {
   deleteAuthToken,

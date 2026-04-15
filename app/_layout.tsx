@@ -1,24 +1,18 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Stack, router, useSegments } from 'expo-router';
+import { useEffect } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import AuthProvider from './contexts/auth-context';
-import colors from './constants/colors';
-import { useAuth } from './hooks/use-auth';
-import { queryClient } from './hooks/query-client';
-import HomeScreen from './screens/home-screen';
-import LoginScreen from './screens/login-screen';
-import RegisterScreen from './screens/register-screen';
-import SplashScreen from './screens/splash-screen';
-
-const Stack = createNativeStackNavigator();
+import colors from '../constants/colors';
+import AuthProvider from '../contexts/auth-context';
+import { useAuth } from '../hooks/use-auth';
+import { queryClient } from '../hooks/query-client';
 
 function AppLoadingScreen() {
   return (
     <View style={styles.loadingContainer}>
       <View style={styles.loadingLogoBox}>
         <Image
-          source={require('./assets/logo.png')}
+          source={require('../assets/logo.png')}
           style={styles.loadingLogo}
           resizeMode="contain"
         />
@@ -29,39 +23,46 @@ function AppLoadingScreen() {
   );
 }
 
-function AppNavigator() {
+function RootNavigator() {
   const { isAuthenticated, isReady } = useAuth();
+  const segments = useSegments();
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    const currentGroup = segments[0];
+    const inMainGroup = currentGroup === '(main)';
+
+    if (isAuthenticated && !inMainGroup) {
+      router.replace('/home');
+      return;
+    }
+
+    if (!isAuthenticated && inMainGroup) {
+      router.replace('/login');
+    }
+  }, [isAuthenticated, isReady, segments]);
 
   if (!isReady) {
     return <AppLoadingScreen />;
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        key={isAuthenticated ? 'app-stack' : 'auth-stack'}
-        id="main-stack"
-        screenOptions={{ headerShown: false }}
-      >
-        {isAuthenticated ? (
-          <Stack.Screen name="Home" component={HomeScreen} />
-        ) : (
-          <>
-            <Stack.Screen name="Splash" component={SplashScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(main)" />
+    </Stack>
   );
 }
 
-export default function App() {
+export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppNavigator />
+        <RootNavigator />
       </AuthProvider>
     </QueryClientProvider>
   );
