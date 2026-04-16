@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function RegistrationSuccess() {
   const router = useRouter();
@@ -8,13 +9,14 @@ export default function RegistrationSuccess() {
     <View style={styles.screen}>
       <View style={styles.card}>
         <View style={styles.checkCircle}>
-          <Text style={styles.checkText}>✓</Text>
+          <Ionicons name="checkmark" size={42} color="#FFF" />
         </View>
 
         <Text style={styles.title}>Registration Submitted</Text>
 
         <Text style={styles.desc}>
-          Thank you for registering as a skilled worker with us. We will get back to you soon.
+          Thank you for registering as a skilled worker with us. We will get back to
+          you soon.
         </Text>
 
         <TouchableOpacity

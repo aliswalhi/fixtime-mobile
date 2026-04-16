@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { ordersStyles as styles } from '../../styles/orders.styles';
 
 type OrderTab = 'active' | 'completed';
@@ -16,57 +17,60 @@ type OrderItem = {
   time: string;
 };
 
-const ORDER_TABS: { key: OrderTab; label: string }[] = [
-  { key: 'active', label: 'Active' },
-  { key: 'completed', label: 'Completed' },
-];
-
-const ORDER_ITEMS: OrderItem[] = [
-  {
-    id: '1',
-    title: 'Home deep cleaning',
-    subtitle: 'Scheduled with a cleaner for today',
-    status: 'active',
-    statusLabel: 'In Progress',
-    statusBg: '#E8F1FF',
-    statusColor: '#2563EB',
-    time: 'Today, 2:30 PM',
-  },
-  {
-    id: '2',
-    title: 'Kitchen plumbing repair',
-    subtitle: 'Worker is on the way to your location',
-    status: 'active',
-    statusLabel: 'Confirmed',
-    statusBg: '#FEF3C7',
-    statusColor: '#B45309',
-    time: 'Tomorrow, 11:00 AM',
-  },
-  {
-    id: '3',
-    title: 'AC maintenance',
-    subtitle: 'Service completed and payment received',
-    status: 'completed',
-    statusLabel: 'Completed',
-    statusBg: '#EAF8EE',
-    statusColor: '#22A45D',
-    time: 'Apr 10, 4:15 PM',
-  },
-];
-
 export default function OrdersScreen() {
   const [activeTab, setActiveTab] = useState<OrderTab>('active');
+  const { t, isRTL } = useLanguage();
 
-  const filteredOrders = ORDER_ITEMS.filter((item) => item.status === activeTab);
+  const orderTabs: { key: OrderTab; label: string }[] = [
+    { key: 'active', label: t.active },
+    { key: 'completed', label: t.completed },
+  ];
+
+  const orderItems: OrderItem[] = [
+    {
+      id: '1',
+      title: t.orderHomeDeepCleaning,
+      subtitle: t.orderHomeDeepCleaningSubtitle,
+      status: 'active',
+      statusLabel: t.inProgress,
+      statusBg: '#E8F1FF',
+      statusColor: '#2563EB',
+      time: t.orderTimeToday,
+    },
+    {
+      id: '2',
+      title: t.orderKitchenPlumbingRepair,
+      subtitle: t.orderKitchenPlumbingRepairSubtitle,
+      status: 'active',
+      statusLabel: t.confirmed,
+      statusBg: '#FEF3C7',
+      statusColor: '#B45309',
+      time: t.orderTimeTomorrow,
+    },
+    {
+      id: '3',
+      title: t.orderAcMaintenance,
+      subtitle: t.orderAcMaintenanceSubtitle,
+      status: 'completed',
+      statusLabel: t.completed,
+      statusBg: '#EAF8EE',
+      statusColor: '#22A45D',
+      time: t.orderTimeCompleted,
+    },
+  ];
+
+  const filteredOrders = orderItems.filter((item) => item.status === activeTab);
 
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
-        <Text style={styles.pageTitle}>Orders</Text>
-        <Text style={styles.subtitle}>Track your current and completed requests.</Text>
+        <Text style={[styles.pageTitle, isRTL && { textAlign: 'right' }]}>{t.orders}</Text>
+        <Text style={[styles.subtitle, isRTL && { textAlign: 'right' }]}>
+          {t.trackOrders}
+        </Text>
 
         <View style={styles.tabsRow}>
-          {ORDER_TABS.map((tab) => {
+          {orderTabs.map((tab) => {
             const isActive = activeTab === tab.key;
 
             return (
@@ -92,15 +96,19 @@ export default function OrdersScreen() {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.emptyBox}>
-              <Text style={styles.emptyTitle}>No orders found</Text>
-              <Text style={styles.emptyText}>Your requests will appear here.</Text>
+              <Text style={styles.emptyTitle}>{t.noOrders}</Text>
+              <Text style={styles.emptyText}>{t.ordersAppearHere}</Text>
             </View>
           }
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardTextWrap}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+                <Text style={[styles.cardTitle, isRTL && { textAlign: 'right' }]}>
+                  {item.title}
+                </Text>
+                <Text style={[styles.cardSubtitle, isRTL && { textAlign: 'right' }]}>
+                  {item.subtitle}
+                </Text>
               </View>
 
               <View style={styles.bottomRow}>

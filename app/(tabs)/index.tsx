@@ -1,25 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    FlatList,
-    Modal,
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ServiceCard from '../../components/ServiceCard';
 import {
-    AppNotification,
-    getNotifications,
-    getServices,
-    ServiceItem,
+  AppNotification,
+  getNotifications,
+  getServices,
+  ServiceItem,
 } from '../../constants/firebaseApi';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../hooks/use-auth';
+import { logout } from '../../services/auth/http/auth-api';
 import { dashboardStyles as styles } from '../../styles/dashboard.styles';
 
 const serviceToCategoryMap: Record<string, string> = {
@@ -41,6 +45,7 @@ export default function DashboardScreen() {
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
 
   const { t, language, setLanguage, isRTL } = useLanguage();
+  const { clearAuthenticatedSession } = useAuth();
 
   const {
     data: notifications = [],
@@ -81,10 +86,6 @@ export default function DashboardScreen() {
     });
   };
 
-  const handleOrderPress = () => {
-    router.push('/orders');
-  };
-
   const openMenu = () => {
     setNotificationsVisible(false);
     setMenuVisible(true);
@@ -101,19 +102,49 @@ export default function DashboardScreen() {
     setShowLanguageOptions(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      // Always clear the local session even if the logout request fails.
+    }
+
+    await clearAuthenticatedSession();
+    closePanels();
+    router.replace('/login');
+  };
+
   const handleMenuItemPress = (key: string) => {
-    if (key === 'language') {
-      setShowLanguageOptions((prev) => !prev);
-      return;
+    switch (key) {
+      case 'language':
+        setShowLanguageOptions((prev) => !prev);
+        return;
+      case 'placeOrder':
+        closePanels();
+        router.push('/place-order');
+        return;
+      case 'becomeWorker':
+        closePanels();
+        router.push('/worker-intro');
+        return;
+      case 'contactUs':
+        Alert.alert('Contact Us', 'Please contact support@fixtime.com');
+        return;
+      case 'logout':
+        void handleLogout();
+        return;
+      default:
+        Alert.alert('Coming Soon', 'This screen is not available yet.');
     }
   };
 
   const menuItems = [
     { id: '1', key: 'myProfile', title: t.myProfile },
     { id: '2', key: 'contactUs', title: t.contactUs },
-    { id: '3', key: 'becomeWorker', title: t.becomeWorker },
-    { id: '4', key: 'language', title: t.language },
-    { id: '5', key: 'logout', title: t.logout },
+    { id: '3', key: 'placeOrder', title: t.placeOrder },
+    { id: '4', key: 'becomeWorker', title: t.becomeWorker },
+    { id: '5', key: 'language', title: t.language },
+    { id: '6', key: 'logout', title: t.logout },
   ];
 
   return (
@@ -123,7 +154,7 @@ export default function DashboardScreen() {
         contentContainerStyle={styles.content}
       >
         <View style={styles.header}>
-          <Text style={styles.brandName}>FixTime</Text>
+          <Text style={styles.brandName}>{t.brandName}</Text>
 
           <View style={styles.headerActions}>
             <TouchableOpacity
@@ -131,7 +162,7 @@ export default function DashboardScreen() {
               activeOpacity={0.85}
               onPress={openNotifications}
             >
-              <Text style={styles.iconText}>🔔</Text>
+              <Ionicons name="notifications-outline" size={20} color="#111827" />
               <View style={styles.notificationDot} />
             </TouchableOpacity>
 
@@ -140,7 +171,7 @@ export default function DashboardScreen() {
               activeOpacity={0.85}
               onPress={openMenu}
             >
-              <Text style={styles.iconText}>☰</Text>
+              <Ionicons name="menu-outline" size={22} color="#111827" />
             </TouchableOpacity>
           </View>
         </View>
@@ -151,16 +182,6 @@ export default function DashboardScreen() {
             placeholderTextColor="#A0A0A0"
             style={[styles.searchInput, isRTL && { textAlign: 'right' }]}
           />
-        </View>
-
-        <View style={styles.orderButtonWrapper}>
-          <TouchableOpacity
-            style={styles.orderButton}
-            activeOpacity={0.85}
-            onPress={handleOrderPress}
-          >
-            <Text style={styles.orderButtonText}>Order</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.sectionHeader}>
@@ -212,7 +233,7 @@ export default function DashboardScreen() {
                       onPress={() => handleMenuItemPress(item.key)}
                     >
                       <Text style={styles.panelItemText}>{item.title}</Text>
-                      <Text style={styles.panelArrow}>›</Text>
+                      <Text style={styles.panelArrow}>{'>'}</Text>
                     </TouchableOpacity>
 
                     {item.key === 'language' && showLanguageOptions && (

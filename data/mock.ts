@@ -32,27 +32,33 @@ export const notifications = [
 export const menuItems = [
   {
     id: '1',
+    key: 'myProfile',
     title: 'My Profile',
-    route: '/profile',
   },
   {
     id: '2',
+    key: 'contactUs',
     title: 'Contact Us',
-    route: '/contact',
   },
   {
     id: '3',
+    key: 'placeOrder',
+    title: 'Place Order',
+  },
+  {
+    id: '4',
+    key: 'becomeWorker',
     title: 'Become a Worker',
     route: '/worker-intro',
   },
   {
-    id: '4',
+    id: '5',
+    key: 'language',
     title: 'Language',
-    route: '/language',
   },
   {
-    id: '5',
+    id: '6',
+    key: 'logout',
     title: 'Logout',
-    route: null,
   },
 ];

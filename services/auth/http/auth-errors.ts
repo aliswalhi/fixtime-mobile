@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ApiErrorResponse } from '../../types/api';
+import type { ApiErrorResponse } from '../../../types/api';
 
 const authErrorMessages: Record<string, string> = {
   'auth/email-already-in-use':

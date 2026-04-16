@@ -30,7 +30,7 @@ export default function LoginPage() {
   async function handleLogin(values: LoginPayload) {
     try {
       await loginMutation.mutateAsync(values);
-      router.replace('/home');
+      router.replace('/');
     } catch (error: any) {
       showAlert('Login Failed', error.message);
     }

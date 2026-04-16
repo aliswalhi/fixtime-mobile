@@ -4,13 +4,13 @@ import type {
   RegisterPayload,
   RegisterResponse,
   UserProfile,
-} from '../../types/auth';
+} from '../../../types/auth';
 import {
   getLoginValidationError,
   getRegisterValidationError,
   sanitizeLoginPayload,
   sanitizeRegisterPayload,
-} from '../../validation/auth-validation';
+} from '../../../validation/auth-validation';
 import { AuthApiError, normalizeAuthError } from './auth-errors';
 import {
   getCurrentUserProfileRequest,

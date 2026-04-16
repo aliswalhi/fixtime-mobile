@@ -61,16 +61,23 @@ export default function TabsLayout() {
       />
 
       <Tabs.Screen
-        name="notifications"
+        name="orders"
         options={{
-          title: t.notifications,
+          title: t.orders,
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'notifications' : 'notifications-outline'}
+              name={focused ? 'receipt' : 'receipt-outline'}
               size={size}
               color={color}
             />
           ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          href: null,
         }}
       />
 
@@ -81,13 +88,6 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'menu' : 'menu-outline'} size={size} color={color} />
           ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="orders"
-        options={{
-          href: null,
         }}
       />
     </Tabs>

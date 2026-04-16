@@ -10,8 +10,8 @@ import {
   loginWithFirebase,
   logoutFromFirebase,
   registerWithFirebase,
-} from '../../integrations/firebase/auth-provider';
-import type { ApiErrorResponse } from '../../types/api';
+} from '../../../integrations/firebase/auth-provider';
+import type { ApiErrorResponse } from '../../../types/api';
 
 type RouteHandler = (payload?: unknown) => Promise<unknown>;
 

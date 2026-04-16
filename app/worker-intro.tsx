@@ -1,14 +1,15 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  Linking,
-  Alert,
-} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import {
+  Alert,
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function WorkerIntro() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function WorkerIntro() {
             />
 
             <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
-              <Text style={styles.closeText}>✕</Text>
+              <Ionicons name="close" size={20} color="#222" />
             </TouchableOpacity>
           </View>
 
@@ -54,7 +55,7 @@ export default function WorkerIntro() {
             <Text style={styles.subtitle}>Join Our Workforce Today</Text>
 
             <View style={styles.item}>
-              <Text style={styles.icon}>⏰</Text>
+              <Ionicons style={styles.icon} name="time-outline" size={22} color="#111" />
               <View style={styles.textBox}>
                 <Text style={styles.itemTitle}>Increased Job Opportunities</Text>
                 <Text style={styles.itemDesc}>
@@ -64,7 +65,7 @@ export default function WorkerIntro() {
             </View>
 
             <View style={styles.item}>
-              <Text style={styles.icon}>🏅</Text>
+              <Ionicons style={styles.icon} name="ribbon-outline" size={22} color="#111" />
               <View style={styles.textBox}>
                 <Text style={styles.itemTitle}>Enhanced Professional Reputation</Text>
                 <Text style={styles.itemDesc}>
@@ -74,11 +75,17 @@ export default function WorkerIntro() {
             </View>
 
             <View style={styles.item}>
-              <Text style={styles.icon}>💼</Text>
+              <Ionicons
+                style={styles.icon}
+                name="briefcase-outline"
+                size={22}
+                color="#111"
+              />
               <View style={styles.textBox}>
                 <Text style={styles.itemTitle}>Convenient Business Management</Text>
                 <Text style={styles.itemDesc}>
-                  Enjoy a hassle-free payment process, with secure and direct earnings deposited into your account.
+                  Enjoy a hassle-free payment process, with secure and direct earnings
+                  deposited into your account.
                 </Text>
               </View>
             </View>
@@ -167,7 +174,6 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   icon: {
-    fontSize: 22,
     marginRight: 12,
     marginTop: 2,
   },

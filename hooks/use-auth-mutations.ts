@@ -5,8 +5,8 @@ import type {
   RegisterPayload,
   RegisterResponse,
 } from '../types/auth';
-import { login, register } from '../services/auth/auth-api';
-import type { AuthApiError } from '../services/auth/auth-errors';
+import { login, register } from '../services/auth/http/auth-api';
+import type { AuthApiError } from '../services/auth/http/auth-errors';
 import { useAuth } from './use-auth';
 
 export function useLoginMutation() {

@@ -7,7 +7,8 @@ import {
   useState,
 } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getCurrentUserProfile } from '../services/auth/auth-api';
+import { getCurrentUserProfile } from '../services/auth/http/auth-api';
+import { setApiClientAuthToken } from '../services/auth/http/api-client';
 import type { LoginResponse, RegisterResponse, UserProfile } from '../types/auth';
 import {
   deleteAuthToken,
@@ -50,6 +51,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       await deleteAuthToken();
     }
 
+    setApiClientAuthToken(nextToken);
     setToken(nextToken);
   }, []);
 
@@ -69,6 +71,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           return;
         }
 
+        setApiClientAuthToken(storedToken);
         setToken(storedToken);
       } catch (error) {
         console.log('BOOTSTRAP SESSION ERROR:', error);
@@ -77,6 +80,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           return;
         }
 
+        setApiClientAuthToken(null);
         setToken(null);
       } finally {
         if (isMounted) {
