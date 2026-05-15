@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+
+import { useLanguage } from '../contexts/LanguageContext';
 import { Worker } from '../lib/firebaseApi';
 import { workerCardStyles as styles } from '../styles/workerCard.styles';
-import { useLanguage } from '../contexts/LanguageContext';
 
 type Props = {
   worker: Worker;
+  savedRating?: number;
+  onRateWorker: (workerId: string, rating: number) => void;
 };
 
-export default function WorkerCard({ worker }: Props) {
-  const [userRating, setUserRating] = useState<number>(0);
+export default function WorkerCard({
+  worker,
+  savedRating,
+  onRateWorker,
+}: Props) {
   const { t, isRTL } = useLanguage();
-
-  const handleRate = (rating: number) => {
-    setUserRating(rating);
-  };
 
   const translatedServiceMap: Record<string, string> = {
     Electrician: t.electrician,
@@ -23,92 +25,98 @@ export default function WorkerCard({ worker }: Props) {
     Carpenter: t.carpenter,
   };
 
-  const handleShowInfo = () => {
-    Alert.alert(
-      worker.name,
-      `${t.service}: ${translatedServiceMap[worker.service] || worker.service}
-${t.workingHours}: ${worker.workingHours}
-${t.phone}: ${worker.phone || t.notAvailable}
-${t.email}: ${worker.email || t.notAvailable}
-${t.description}: ${worker.description || t.noDescription}`
-    );
-  };
+  const displayRating =
+    savedRating !== undefined ? savedRating : worker.rating;
 
   return (
     <View style={styles.card}>
-      <View style={styles.avatarPlaceholder}>
-        <Text style={styles.avatarIcon}>👷</Text>
-      </View>
+      <View style={[styles.headerRow, isRTL && styles.rowReverse]}>
+        <View style={styles.avatarBox}>
+          <Text style={styles.avatarIcon}>👷</Text>
+        </View>
 
-      <View style={styles.info}>
-        <View style={styles.topRow}>
-          <Text
-            style={[styles.name, isRTL && { textAlign: 'right' }]}
-            numberOfLines={1}
-          >
-            {worker.name}
-          </Text>
-
-          <View
-            style={[
-              styles.badge,
-              { backgroundColor: worker.available ? '#EAF8EE' : '#FDECEC' },
-            ]}
-          >
+        <View style={styles.info}>
+          <View style={[styles.nameRow, isRTL && styles.rowReverse]}>
             <Text
+              numberOfLines={1}
+              style={[styles.name, isRTL && styles.textRight]}
+            >
+              {worker.name}
+            </Text>
+
+            <View
               style={[
-                styles.badgeText,
-                { color: worker.available ? '#22A45D' : '#D9534F' },
+                styles.badge,
+                worker.available ? styles.availableBadge : styles.busyBadge,
               ]}
             >
-              {worker.available ? t.available : t.busy}
+              <Text
+                style={[
+                  styles.badgeText,
+                  worker.available
+                    ? styles.availableText
+                    : styles.busyText,
+                ]}
+              >
+                {worker.available ? t.available : t.busy}
+              </Text>
+            </View>
+          </View>
+
+          <Text style={[styles.service, isRTL && styles.textRight]}>
+            {translatedServiceMap[worker.service] || worker.service}
+          </Text>
+
+          <View style={[styles.metaRow, isRTL && styles.rowReverse]}>
+            <Text style={styles.meta}>⭐ {displayRating} ({worker.reviewsCount})</Text>
+            <Text style={styles.meta}>📍 {worker.distance}</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={[styles.detailsRow, isRTL && styles.rowReverse]}>
+        <View style={styles.detailBox}>
+          <Text style={styles.detailLabel}>Price</Text>
+          <Text style={styles.detailValue}>${worker.pricePerHour}/hr</Text>
+        </View>
+
+        <View style={styles.detailBox}>
+          <Text style={styles.detailLabel}>Hours</Text>
+          <Text style={styles.detailValue}>{worker.workingHours}</Text>
+        </View>
+      </View>
+
+      <View style={styles.ratingBox}>
+        <View style={[styles.ratingHeader, isRTL && styles.rowReverse]}>
+          <View>
+            <Text style={[styles.ratingTitle, isRTL && styles.textRight]}>
+              {t.rateWorker}
             </Text>
+
+            {savedRating !== undefined && (
+              <Text style={[styles.ratingSubtitle, isRTL && styles.textRight]}>
+                {t.yourRating} {savedRating}/5
+              </Text>
+            )}
           </View>
         </View>
 
-        <Text style={[styles.service, isRTL && { textAlign: 'right' }]}>
-          {translatedServiceMap[worker.service] || worker.service}
-        </Text>
+        <View style={[styles.starsRow, isRTL && styles.rowReverse]}>
+          {[1, 2, 3, 4, 5].map((star) => {
+            const active = savedRating !== undefined && star <= savedRating;
 
-        <View style={styles.metaRow}>
-          <Text style={styles.meta}>⭐ {worker.rating} ({worker.reviewsCount})</Text>
-          <Text style={styles.meta}>📍 {worker.distance}</Text>
-        </View>
-
-        <View style={styles.metaRow}>
-          <Text style={styles.meta}>💵 ${worker.pricePerHour}/hr</Text>
-          <Text style={styles.meta}>🕒 {worker.workingHours}</Text>
-        </View>
-
-        <TouchableOpacity style={styles.infoButton} onPress={handleShowInfo}>
-          <Text style={styles.infoButtonText}>{t.moreInfo}</Text>
-        </TouchableOpacity>
-
-        <View style={styles.ratingSection}>
-          <Text style={[styles.ratingLabel, isRTL && { textAlign: 'right' }]}>
-            {t.rateWorker}
-          </Text>
-
-          <View style={styles.starsRow}>
-            {[1, 2, 3, 4, 5].map((star) => (
+            return (
               <TouchableOpacity
                 key={star}
-                onPress={() => handleRate(star)}
-                activeOpacity={0.8}
-                style={styles.starButton}
+                onPress={() => onRateWorker(worker.id, star)}
+                activeOpacity={0.7}
               >
-                <Text style={[styles.starText, userRating >= star && styles.activeStarText]}>
+                <Text style={[styles.star, active && styles.activeStar]}>
                   ★
                 </Text>
               </TouchableOpacity>
-            ))}
-          </View>
-
-          {userRating > 0 && (
-            <Text style={[styles.userRatingText, isRTL && { textAlign: 'right' }]}>
-              {t.yourRating} {userRating}/5
-            </Text>
-          )}
+            );
+          })}
         </View>
       </View>
     </View>

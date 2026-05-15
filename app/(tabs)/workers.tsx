@@ -1,25 +1,29 @@
+import { useQuery } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  View,
+  FlatList,
+  ScrollView,
   Text,
   TextInput,
-  FlatList,
   TouchableOpacity,
-  ScrollView,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
-import { getWorkers } from '../../lib/firebaseApi';
+
+import AppHeaderWithPanels from '../../components/AppHeaderWithPanels';
 import WorkerCard from '../../components/WorkerCard';
-import { workersStyles as styles } from '../../styles/workers.styles';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useWorkerRatings } from '../../hooks/useWorkerRatings';
+import { getWorkers } from '../../lib/firebaseApi';
+import { workersStyles as styles } from '../../styles/workers.styles';
 
 const categories = ['All', 'Electrician', 'Plumber', 'Mechanic', 'Carpenter'];
 
 export default function WorkersScreen() {
   const params = useLocalSearchParams<{ category?: string }>();
   const { t, isRTL } = useLanguage();
+  const { ratings, rateWorker } = useWorkerRatings();
 
   const initialCategory =
     typeof params.category === 'string' && categories.includes(params.category)
@@ -29,13 +33,21 @@ export default function WorkersScreen() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
 
-  const { data: workers = [], isLoading, isError, error } = useQuery({
+  const {
+    data: workers = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['workers'],
     queryFn: getWorkers,
   });
 
   useEffect(() => {
-    if (typeof params.category === 'string' && categories.includes(params.category)) {
+    if (
+      typeof params.category === 'string' &&
+      categories.includes(params.category)
+    ) {
       setSelectedCategory(params.category);
     } else {
       setSelectedCategory('All');
@@ -65,25 +77,35 @@ export default function WorkersScreen() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.content}>
-        <Text style={[styles.pageTitle, isRTL && { textAlign: 'right' }]}>{t.workerList}</Text>
-        <Text style={[styles.subtitle, isRTL && { textAlign: 'right' }]}>
-          {t.findNearbyWorkers}
-        </Text>
+      <AppHeaderWithPanels />
 
-        <TextInput
-          style={[styles.input, isRTL && { textAlign: 'right' }]}
-          placeholder={t.searchWorker}
-          placeholderTextColor="#9CA3AF"
-          value={search}
-          onChangeText={setSearch}
-        />
+      <View style={styles.container}>
+        <View style={styles.hero}>
+          <Text style={[styles.title, isRTL && styles.textRight]}>
+            {t.workerList}
+          </Text>
+
+          <Text style={[styles.subtitle, isRTL && styles.textRight]}>
+            {t.findNearbyWorkers}
+          </Text>
+
+          <TextInput
+            style={[styles.searchInput, isRTL && styles.textRight]}
+            placeholder={t.searchWorker}
+            placeholderTextColor="#9CA3AF"
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
 
         <View style={styles.filtersWrapper}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filtersContainer}
+            contentContainerStyle={[
+              styles.filtersContainer,
+              isRTL && styles.rowReverse,
+            ]}
           >
             {categories.map((item) => {
               const isActive = selectedCategory === item;
@@ -91,11 +113,19 @@ export default function WorkersScreen() {
               return (
                 <TouchableOpacity
                   key={item}
-                  style={[styles.filterChip, isActive && styles.activeFilterChip]}
                   onPress={() => setSelectedCategory(item)}
                   activeOpacity={0.85}
+                  style={[
+                    styles.filterChip,
+                    isActive && styles.activeFilterChip,
+                  ]}
                 >
-                  <Text style={[styles.filterText, isActive && styles.activeFilterText]}>
+                  <Text
+                    style={[
+                      styles.filterText,
+                      isActive && styles.activeFilterText,
+                    ]}
+                  >
                     {translatedCategories[item]}
                   </Text>
                 </TouchableOpacity>
@@ -105,13 +135,14 @@ export default function WorkersScreen() {
         </View>
 
         {isLoading && (
-          <Text style={{ textAlign: 'center', marginTop: 20 }}>Loading workers...</Text>
+          <Text style={styles.loadingText}>Loading workers...</Text>
         )}
 
         {isError && (
-          <View style={styles.emptyBox}>
-            <Text style={styles.emptyTitle}>Error loading workers</Text>
-            <Text style={styles.emptyText}>
+          <View style={styles.errorBox}>
+            <Text style={styles.errorTitle}>Error loading workers</Text>
+
+            <Text style={styles.errorText}>
               {error instanceof Error ? error.message : 'Unknown error'}
             </Text>
           </View>
@@ -119,12 +150,17 @@ export default function WorkersScreen() {
 
         {!isLoading && !isError && (
           <FlatList
-            style={styles.list}
             data={filteredWorkers}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <WorkerCard worker={item} />}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
+            renderItem={({ item }) => (
+              <WorkerCard
+                worker={item}
+                savedRating={ratings[item.id]}
+                onRateWorker={rateWorker}
+              />
+            )}
             ListEmptyComponent={
               <View style={styles.emptyBox}>
                 <Text style={styles.emptyTitle}>{t.noWorkers}</Text>

@@ -1,73 +1,112 @@
-import React from 'react';
-import { View, Text, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
-import { getPromotions, PromotionItem } from '../../lib/firebaseApi';
-import { promotionsStyles as styles } from '../../styles/promotions.styles';
+import React from 'react';
+import {
+  FlatList,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import AppHeaderWithPanels from '../../components/AppHeaderWithPanels';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getPromoPosts } from '../../lib/apiClient';
+import { promotionsStyles as styles } from '../../styles/promotions.styles';
 
 export default function PromotionsScreen() {
-  const { t, isRTL } = useLanguage();
+  const { isRTL } = useLanguage();
+  const { width } = useWindowDimensions();
+
+  const isLargeScreen = width >= 768;
+  const numColumns = isLargeScreen ? 2 : 1;
 
   const {
     data: promotions = [],
     isLoading,
     isError,
     error,
+    refetch,
   } = useQuery({
-    queryKey: ['promotions'],
-    queryFn: getPromotions,
+    queryKey: ['axios-promotions'],
+    queryFn: getPromoPosts,
   });
 
   return (
     <SafeAreaView style={styles.screen}>
+      <AppHeaderWithPanels />
+
       <View style={styles.content}>
-        <Text style={[styles.pageTitle, isRTL && { textAlign: 'right' }]}>
-          {t.promotions}
+        <Text style={[styles.pageTitle, isRTL && styles.textRight]}>
+          Promotions
         </Text>
 
         {isLoading && (
-          <Text style={{ textAlign: 'center', marginTop: 20 }}>
-            Loading promotions...
-          </Text>
+          <Text style={styles.centerText}>Loading promotions...</Text>
         )}
 
         {isError && (
-          <View style={styles.listContent}>
-            <Text style={{ textAlign: 'center', marginTop: 20 }}>
-              {error instanceof Error ? error.message : 'Error loading promotions'}
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>
+              {error instanceof Error
+                ? error.message
+                : 'Error loading promotions'}
             </Text>
+
+            <TouchableOpacity onPress={() => refetch()} style={styles.retryBtn}>
+              <Text style={styles.retryText}>Retry</Text>
+            </TouchableOpacity>
           </View>
         )}
 
         {!isLoading && !isError && (
           <FlatList
+            key={numColumns}
+            numColumns={numColumns}
             data={promotions}
-            keyExtractor={(item: PromotionItem) => item.id}
+            keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
-            ListEmptyComponent={
-              <Text style={{ textAlign: 'center', marginTop: 20 }}>
-                No promotions found
-              </Text>
+            columnWrapperStyle={
+              isLargeScreen ? styles.columnWrapper : undefined
             }
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                <View style={styles.topRow}>
-                  <Text style={[styles.cardTitle, isRTL && { textAlign: 'right' }]}>
-                    {item.title}
-                  </Text>
+            renderItem={({ item, index }) => (
+              <View style={[styles.card, isLargeScreen && styles.cardLarge]}>
+                <View style={styles.cardHeader}>
+                  <View style={styles.cardTextWrap}>
+                    <Text
+                      style={[styles.cardTitle, isRTL && styles.textRight]}
+                      numberOfLines={2}
+                    >
+                      {item.title}
+                    </Text>
 
-                  <View style={[styles.tagBadge, { backgroundColor: item.tagBg }]}>
-                    <Text style={[styles.tagText, { color: item.tagColor }]}>
+                    <Text
+                      style={[styles.cardDesc, isRTL && styles.textRight]}
+                      numberOfLines={3}
+                    >
+                      {item.description}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.tagBadge,
+                      index % 2 === 0 ? styles.greenTag : styles.blueTag,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.tagText,
+                        index % 2 === 0
+                          ? styles.greenTagText
+                          : styles.blueTagText,
+                      ]}
+                    >
                       {item.tag}
                     </Text>
                   </View>
                 </View>
-
-                <Text style={[styles.cardDesc, isRTL && { textAlign: 'right' }]}>
-                  {item.description}
-                </Text>
               </View>
             )}
           />

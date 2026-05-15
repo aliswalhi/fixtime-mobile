@@ -1,31 +1,33 @@
 import { StyleSheet } from 'react-native';
-import { colors, commonStyles } from './theme';
+import { colors } from './theme';
 
-export const menuStyles = StyleSheet.create({
-  ...commonStyles,
-
-  listContent: {
-    paddingBottom: 24,
-  },
-  item: {
+export const actionCardStyles = StyleSheet.create({
+  card: {
     backgroundColor: colors.white,
     borderRadius: 14,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    marginBottom: 12,
     borderWidth: 1,
     borderColor: colors.cardBorder,
+    padding: 14,
+    marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  itemText: {
-    fontSize: 15,
-    fontWeight: '600',
+
+  title: {
+    fontSize: 14,
+    fontWeight: '700',
     color: colors.text,
+    marginBottom: 4,
   },
+
+  subtitle: {
+    fontSize: 12,
+    color: colors.subtext,
+  },
+
   arrow: {
-    fontSize: 20,
+    fontSize: 22,
     color: '#9CA3AF',
   },
 });

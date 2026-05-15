@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  Pressable,
-  FlatList,
-} from 'react-native';
-import { router } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
-import ServiceCard from '../../components/ServiceCard';
-import { dashboardStyles as styles } from '../../styles/dashboard.styles';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { router } from 'expo-router';
+import React, { useCallback } from 'react';
 import {
-  getNotifications,
-  AppNotification,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import AppHeaderWithPanels from '../../components/AppHeaderWithPanels';
+import ServiceCard from '../../components/ServiceCard';
+
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useNetworkStatus } from '../../hooks/useNetworkStatus';
+
+import {
   getServices,
   ServiceItem,
 } from '../../lib/firebaseApi';
+
+import { dashboardStyles as styles } from '../../styles/dashboard.styles';
 
 const serviceToCategoryMap: Record<string, string> = {
   Cleaning: 'All',
@@ -36,25 +36,15 @@ const serviceToCategoryMap: Record<string, string> = {
 };
 
 export default function DashboardScreen() {
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [notificationsVisible, setNotificationsVisible] = useState(false);
-  const [showLanguageOptions, setShowLanguageOptions] = useState(false);
+  const isConnected = useNetworkStatus();
 
-  const { t, language, setLanguage, isRTL } = useLanguage();
-
-  const {
-    data: notifications = [],
-    isLoading: notificationsLoading,
-    isError: notificationsError,
-  } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: getNotifications,
-  });
+  const { t } = useLanguage();
 
   const {
     data: services = [],
-    isLoading: servicesLoading,
-    isError: servicesError,
+    isLoading,
+    isError,
+    refetch,
   } = useQuery({
     queryKey: ['services'],
     queryFn: getServices,
@@ -73,222 +63,84 @@ export default function DashboardScreen() {
     More: t.moreServices,
   };
 
-  const handleServicePress = (title: string) => {
+  const handleServicePress = useCallback((title: string) => {
     const category = serviceToCategoryMap[title] || 'All';
+
     router.push({
       pathname: '/workers',
       params: { category },
     });
-  };
-
-  const openMenu = () => {
-    setNotificationsVisible(false);
-    setMenuVisible(true);
-  };
-
-  const openNotifications = () => {
-    setMenuVisible(false);
-    setNotificationsVisible(true);
-  };
-
-  const closePanels = () => {
-    setMenuVisible(false);
-    setNotificationsVisible(false);
-    setShowLanguageOptions(false);
-  };
-
-  const handleMenuItemPress = (key: string) => {
-    if (key === 'language') {
-      setShowLanguageOptions((prev) => !prev);
-      return;
-    }
-  };
-
-  const menuItems = [
-    { id: '1', key: 'myProfile', title: t.myProfile },
-    { id: '2', key: 'contactUs', title: t.contactUs },
-    { id: '3', key: 'becomeWorker', title: t.becomeWorker },
-    { id: '4', key: 'language', title: t.language },
-    { id: '5', key: 'logout', title: t.logout },
-  ];
+  }, []);
 
   return (
     <SafeAreaView style={styles.screen}>
+      <AppHeaderWithPanels />
+
+      {isConnected === false && (
+        <View style={styles.offlineBanner}>
+          <Text style={styles.offlineIcon}>
+            📡
+          </Text>
+
+          <View style={styles.offlineTextWrap}>
+            <Text style={styles.offlineTitle}>
+              Offline Mode
+            </Text>
+
+            <Text style={styles.offlineText}>
+              No internet connection detected
+            </Text>
+          </View>
+        </View>
+      )}
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <View style={styles.header}>
-          <Text style={styles.brandName}>FixTime</Text>
-
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={styles.iconButton}
-              activeOpacity={0.85}
-              onPress={openNotifications}
-            >
-              <Text style={styles.iconText}>🔔</Text>
-              <View style={styles.notificationDot} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.iconButton}
-              activeOpacity={0.85}
-              onPress={openMenu}
-            >
-              <Text style={styles.iconText}>☰</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.searchWrapper}>
-          <TextInput
-            placeholder={t.searchHire}
-            placeholderTextColor="#A0A0A0"
-            style={[styles.searchInput, isRTL && { textAlign: 'right' }]}
-          />
-        </View>
-
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t.services}</Text>
+          <Text style={styles.sectionTitle}>
+            {t.services}
+          </Text>
         </View>
 
-        {servicesLoading ? (
-          <Text style={{ textAlign: 'center', marginTop: 20 }}>
+        {isLoading ? (
+          <Text style={styles.loadingText}>
             Loading services...
           </Text>
-        ) : servicesError ? (
-          <Text style={{ textAlign: 'center', marginTop: 20 }}>
-            Error loading services
-          </Text>
+        ) : isError ? (
+          <View style={styles.centerBox}>
+            <Text style={styles.errorText}>
+              Error loading services
+            </Text>
+
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={() => refetch()}
+            >
+              <Text style={styles.retryButtonText}>
+                Retry
+              </Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <View style={styles.grid}>
             {services.map((service: ServiceItem) => (
               <ServiceCard
                 key={service.id}
-                title={translatedServiceTitles[service.title] || service.title}
+                title={
+                  translatedServiceTitles[service.title] ||
+                  service.title
+                }
                 icon={service.icon}
-                onPress={() => handleServicePress(service.title)}
+                onPress={() =>
+                  handleServicePress(service.title)
+                }
               />
             ))}
           </View>
         )}
       </ScrollView>
-
-      <Modal
-        visible={menuVisible || notificationsVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={closePanels}
-      >
-        <Pressable style={styles.overlay} onPress={closePanels}>
-          {menuVisible && (
-            <Pressable style={styles.menuPanel} onPress={(e) => e.stopPropagation()}>
-              <Text style={styles.panelTitle}>{t.menu}</Text>
-
-              <FlatList
-                data={menuItems}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.panelList}
-                renderItem={({ item }) => (
-                  <View>
-                    <TouchableOpacity
-                      style={styles.panelItem}
-                      activeOpacity={0.85}
-                      onPress={() => handleMenuItemPress(item.key)}
-                    >
-                      <Text style={styles.panelItemText}>{item.title}</Text>
-                      <Text style={styles.panelArrow}>›</Text>
-                    </TouchableOpacity>
-
-                    {item.key === 'language' && showLanguageOptions && (
-                      <View style={styles.languageDropdown}>
-                        <TouchableOpacity
-                          style={[
-                            styles.languageOptionButton,
-                            language === 'en' && styles.languageOptionButtonActive,
-                          ]}
-                          onPress={() => setLanguage('en')}
-                        >
-                          <Text
-                            style={[
-                              styles.languageOptionText,
-                              language === 'en' && styles.languageOptionTextActive,
-                            ]}
-                          >
-                            {t.english}
-                          </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={[
-                            styles.languageOptionButton,
-                            language === 'ar' && styles.languageOptionButtonActive,
-                          ]}
-                          onPress={() => setLanguage('ar')}
-                        >
-                          <Text
-                            style={[
-                              styles.languageOptionText,
-                              language === 'ar' && styles.languageOptionTextActive,
-                            ]}
-                          >
-                            {t.arabic}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    )}
-                  </View>
-                )}
-              />
-            </Pressable>
-          )}
-
-          {notificationsVisible && (
-            <Pressable
-              style={styles.notificationsPanel}
-              onPress={(e) => e.stopPropagation()}
-            >
-              <Text style={styles.panelTitle}>{t.notifications}</Text>
-
-              {notificationsLoading ? (
-                <Text style={{ textAlign: 'center', marginTop: 12 }}>
-                  Loading notifications...
-                </Text>
-              ) : notificationsError ? (
-                <Text style={{ textAlign: 'center', marginTop: 12 }}>
-                  Error loading notifications
-                </Text>
-              ) : (
-                <FlatList
-                  data={notifications}
-                  keyExtractor={(item: AppNotification) => item.id}
-                  contentContainerStyle={styles.panelList}
-                  ListEmptyComponent={
-                    <Text style={{ textAlign: 'center', marginTop: 12 }}>
-                      No notifications found
-                    </Text>
-                  }
-                  renderItem={({ item }) => (
-                    <View style={styles.notificationItem}>
-                      <View
-                        style={[styles.notificationIconBox, { backgroundColor: item.color }]}
-                      >
-                        <Text style={styles.notificationIconText}>!</Text>
-                      </View>
-
-                      <View style={styles.notificationTextWrap}>
-                        <Text style={styles.notificationTitle}>{item.title}</Text>
-                        <Text style={styles.notificationMessage}>{item.message}</Text>
-                      </View>
-                    </View>
-                  )}
-                />
-              )}
-            </Pressable>
-          )}
-        </Pressable>
-      </Modal>
     </SafeAreaView>
   );
 }

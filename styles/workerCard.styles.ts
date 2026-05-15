@@ -1,110 +1,177 @@
 import { StyleSheet } from 'react-native';
-import { colors } from './theme';
 
 export const workerCardStyles = StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
+    padding: 18,
+    marginBottom: 18,
     borderWidth: 1,
-    borderColor: colors.cardBorder,
+    borderColor: '#EEF2F7',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 6,
   },
-  avatarPlaceholder: {
-    width: 64,
-    height: 64,
-    borderRadius: 14,
-    marginRight: 12,
-    backgroundColor: '#F3F4F6',
+
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+
+  textRight: {
+    textAlign: 'right',
+  },
+
+  avatarBox: {
+    width: 72,
+    height: 72,
+    borderRadius: 24,
+    backgroundColor: '#EEF2FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   avatarIcon: {
-    fontSize: 28,
+    fontSize: 34,
   },
+
   info: {
     flex: 1,
   },
-  topRow: {
+
+  nameRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    gap: 8,
   },
+
   name: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.text,
     flex: 1,
-    marginRight: 8,
+    fontSize: 21,
+    fontWeight: '900',
+    color: '#111827',
   },
+
   badge: {
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
   },
+
+  availableBadge: {
+    backgroundColor: '#DCFCE7',
+  },
+
+  busyBadge: {
+    backgroundColor: '#FEE2E2',
+  },
+
   badgeText: {
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '800',
   },
+
+  availableText: {
+    color: '#16A34A',
+  },
+
+  busyText: {
+    color: '#DC2626',
+  },
+
   service: {
-    fontSize: 13,
-    color: colors.subtext,
     marginTop: 4,
-    marginBottom: 8,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#6366F1',
   },
+
   metaRow: {
     flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
     flexWrap: 'wrap',
-    marginBottom: 6,
   },
+
   meta: {
-    fontSize: 12,
-    color: '#4B5563',
-    marginRight: 10,
-    marginBottom: 4,
-  },
-  infoButton: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-    marginTop: 4,
-    marginBottom: 8,
-  },
-  infoButtonText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#4338CA',
-  },
-  ratingSection: {
-    marginTop: 6,
-  },
-  ratingLabel: {
-    fontSize: 12,
+    color: '#6B7280',
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: 6,
   },
+
+  detailsRow: {
+    marginTop: 18,
+    flexDirection: 'row',
+    gap: 10,
+  },
+
+  detailBox: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 18,
+    padding: 12,
+  },
+
+  detailLabel: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontWeight: '700',
+  },
+
+  detailValue: {
+    marginTop: 4,
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#111827',
+  },
+
+  ratingBox: {
+    marginTop: 16,
+    backgroundColor: '#0F172A',
+    borderRadius: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+
+  ratingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+
+  ratingTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+
+  ratingSubtitle: {
+    color: '#CBD5E1',
+    fontSize: 12,
+    marginTop: 2,
+  },
+
   starsRow: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4,
+    gap: 6,
   },
-  starButton: {
-    marginRight: 6,
+
+  star: {
+    fontSize: 28,
+    color: '#64748B',
   },
-  starText: {
-    fontSize: 22,
-    color: '#D1D5DB',
-  },
-  activeStarText: {
+
+  activeStar: {
     color: '#FBBF24',
-  },
-  userRatingText: {
-    fontSize: 12,
-    color: colors.subtext,
   },
 });

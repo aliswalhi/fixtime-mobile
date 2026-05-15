@@ -1,61 +1,111 @@
 import { StyleSheet } from 'react-native';
-import { colors, commonStyles } from './theme';
 
 export const workersStyles = StyleSheet.create({
-  ...commonStyles,
-
+  screen: {
+    flex: 1,
+    backgroundColor: '#F4FBF6',
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 18,
+    paddingTop: 18,
+  },
+  hero: {
+    backgroundColor: '#EAF8EE',
+    borderRadius: 26,
+    padding: 20,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#102A1D',
+  },
+  subtitle: {
+    marginTop: 6,
+    fontSize: 15,
+    color: '#374151',
+    fontWeight: '600',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+  searchInput: {
+    marginTop: 18,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 999,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: '#111827',
+  },
   filtersWrapper: {
-    height: 50,
-    marginBottom: 8,
-    justifyContent: 'center',
+    marginBottom: 16,
   },
   filtersContainer: {
+    gap: 10,
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingRight: 12,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
   },
   filterChip: {
-    backgroundColor: colors.white,
-    paddingHorizontal: 14,
-    height: 34,
-    borderRadius: 10,
-    marginRight: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 11,
+    borderRadius: 999,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: colors.border,
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: '#E5E7EB',
   },
   activeFilterChip: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: '#008F45',
+    borderColor: '#008F45',
   },
   filterText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#374151',
+    color: '#6B7280',
+    fontWeight: '900',
+    fontSize: 14,
   },
   activeFilterText: {
-    color: colors.text,
+    color: '#FFFFFF',
   },
-  list: {
-    flex: 1,
+  loadingText: {
+    textAlign: 'center',
+    marginTop: 30,
+    color: '#6B7280',
+  },
+  errorBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+    marginTop: 20,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#DC2626',
+  },
+  errorText: {
+    marginTop: 8,
+    color: '#6B7280',
   },
   listContent: {
-    paddingTop: 4,
-    paddingBottom: 24,
+    paddingBottom: 120,
   },
   emptyBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 22,
     marginTop: 20,
     alignItems: 'center',
   },
   emptyTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#111827',
   },
   emptyText: {
-    fontSize: 13,
-    color: colors.subtext,
+    marginTop: 8,
+    color: '#6B7280',
   },
 });

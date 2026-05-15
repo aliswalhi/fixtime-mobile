@@ -40,7 +40,7 @@ export type ServiceItem = {
 };
 
 export const getWorkers = async (): Promise<Worker[]> => {
-  const snapshot = await getDocs(collection(db, 'workers'));
+  const snapshot = await getDocs(collection(db, 'workerApplications'));
 
   return snapshot.docs.map((doc) => {
     const data = doc.data();
@@ -49,11 +49,23 @@ export const getWorkers = async (): Promise<Worker[]> => {
       id: doc.id,
       name: data.fullName || 'Unknown Worker',
       service: data.workType || 'General Service',
-      rating: typeof data.rating === 'number' ? data.rating : 4.5,
-      reviewsCount: typeof data.reviewsCount === 'number' ? data.reviewsCount : 0,
+      rating:
+        typeof data.rating === 'number'
+          ? data.rating
+          : 4.5,
+      reviewsCount:
+        typeof data.reviewsCount === 'number'
+          ? data.reviewsCount
+          : 0,
       distance: data.country || 'N/A',
-      available: typeof data.available === 'boolean' ? data.available : true,
-      pricePerHour: typeof data.pricePerHour === 'number' ? data.pricePerHour : 15,
+      available:
+        typeof data.available === 'boolean'
+          ? data.available
+          : true,
+      pricePerHour:
+        typeof data.pricePerHour === 'number'
+          ? data.pricePerHour
+          : 15,
       workingHours:
         data.fromHour && data.toHour
           ? `${data.fromHour} - ${data.toHour}`

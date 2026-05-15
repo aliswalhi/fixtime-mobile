@@ -1,7 +1,9 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+
 import { useLanguage } from '../../contexts/LanguageContext';
+import { tabsStyles as styles } from '../../styles/tabs.styles';
 
 export default function TabsLayout() {
   const { t } = useLanguage();
@@ -12,18 +14,8 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: '#2563EB',
         tabBarInactiveTintColor: '#9CA3AF',
-        tabBarStyle: {
-          height: 62,
-          paddingTop: 6,
-          paddingBottom: 8,
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 1,
-          borderTopColor: '#E5E7EB',
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
-        },
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.label,
       }}
     >
       <Tabs.Screen
@@ -31,7 +23,11 @@ export default function TabsLayout() {
         options={{
           title: t.home,
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -41,7 +37,11 @@ export default function TabsLayout() {
         options={{
           title: t.workers,
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'people' : 'people-outline'} size={size} color={color} />
+            <Ionicons
+              name={focused ? 'people' : 'people-outline'}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />

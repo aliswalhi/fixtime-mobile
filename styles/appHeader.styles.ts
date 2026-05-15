@@ -1,72 +1,45 @@
 import { StyleSheet } from 'react-native';
 
-export const dashboardStyles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F4FBF6',
-  },
-
-  content: {
-    paddingHorizontal: 18,
-    paddingTop: 24,
-    paddingBottom: 120,
-  },
-
-  sectionHeader: {
-    marginBottom: 18,
-  },
-
-  sectionTitle: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: '#102A1D',
-  },
-
-  grid: {
+export const appHeaderStyles = StyleSheet.create({
+  header: {
+    backgroundColor: '#008F45',
+    paddingHorizontal: 22,
+    paddingTop: 28,
+    paddingBottom: 28,
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
 
-  loadingText: {
-    textAlign: 'center',
-    marginTop: 20,
-    color: '#6B7280',
-    fontSize: 15,
+  logo: {
+    color: '#FFFFFF',
+    fontSize: 32,
+    fontWeight: '900',
   },
 
-  offlineBanner: {
-    backgroundColor: '#FFF3F3',
-    marginHorizontal: 16,
-    marginTop: 12,
-    padding: 14,
-    borderRadius: 14,
+  actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    borderWidth: 1,
-    borderColor: '#FFD6D6',
+    gap: 12,
   },
 
-  offlineIcon: {
-    fontSize: 18,
+  iconButton: {
+    width: 46,
+    height: 46,
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
-  offlineTextWrap: {
-    flex: 1,
-  },
-
-  offlineTitle: {
-    color: '#C62828',
-    fontWeight: '800',
-    fontSize: 14,
-  },
-
-  offlineText: {
-    color: '#666',
-    fontSize: 12,
-    marginTop: 2,
+  dot: {
+    position: 'absolute',
+    top: 9,
+    right: 10,
+    width: 9,
+    height: 9,
+    borderRadius: 99,
+    backgroundColor: '#EF4444',
   },
 
   overlay: {
@@ -201,7 +174,7 @@ export const dashboardStyles = StyleSheet.create({
 
   centerBox: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 16,
   },
 
   errorText: {

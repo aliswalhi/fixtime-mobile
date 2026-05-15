@@ -50,4 +50,15 @@ export const notificationsStyles = StyleSheet.create({
     color: '#9CA3AF',
     marginTop: 2,
   },
+  offlineBanner: {
+  padding: 12,
+  backgroundColor: '#FFE5E5',
+  borderRadius: 10,
+  marginBottom: 12,
+},
+
+offlineText: {
+  color: '#B00020',
+  textAlign: 'center',
+},
 });
